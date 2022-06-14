@@ -13,6 +13,8 @@ import Header from '../components/Header';
 import v from '../styles/styleVariables';
 import ListMovie from '../screens/ListMovie';
 import MovieDetail from '../screens/MovieDetail.js';
+import Order from '../screens/Order';
+import Payment from '../screens/Payment';
 
 function HomeNavigator() {
   return (
@@ -37,6 +39,16 @@ function MoviesNavigator() {
       <Stack.Screen
         component={MovieDetail}
         name="MovieDetail"
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        component={Order}
+        name="Order"
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        component={Payment}
+        name="Payment"
         options={{headerShown: false}}
       />
     </Stack.Navigator>
