@@ -64,7 +64,7 @@ const gs = StyleSheet.create({
     borderColor: v.color.inputBackground,
     borderRadius: 12,
     paddingHorizontal: 20,
-    paddingVertical: 12,
+    paddingVertical: 8,
     fontSize: 16,
   },
   placeholder: {
@@ -79,7 +79,7 @@ const gs = StyleSheet.create({
   btnPrimary: {
     backgroundColor: v.color.primary,
     borderRadius: 12,
-    paddingVertical: 16,
+    paddingVertical: 12,
     marginBottom: 16,
     elevation: 10,
     shadowColor: v.color.primary,
@@ -95,7 +95,7 @@ const gs = StyleSheet.create({
     borderColor: v.color.primary,
     borderWidth: 1,
     borderRadius: 12,
-    paddingVertical: 16,
+    paddingVertical: 12,
     marginBottom: 16,
   },
   btnOutlinePrimaryText: {
