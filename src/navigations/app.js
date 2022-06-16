@@ -15,6 +15,7 @@ import ListMovie from '../screens/ListMovie';
 import MovieDetail from '../screens/MovieDetail.js';
 import Order from '../screens/Order';
 import Payment from '../screens/Payment';
+import Ticket from '../screens/Ticket.js';
 
 function HomeNavigator() {
   return (
@@ -61,6 +62,11 @@ function ProfileNavigator() {
       <Stack.Screen
         component={Profile}
         name="Profile"
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        component={Ticket}
+        name="Ticket"
         options={{headerShown: false}}
       />
     </Stack.Navigator>
