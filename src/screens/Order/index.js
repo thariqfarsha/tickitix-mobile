@@ -45,7 +45,7 @@ export default function Order(props) {
 
   return (
     <ScrollView
-      showsHorizontalScrollIndicator={false}
+      showsVerticalScrollIndicator={false}
       style={{
         backgroundColor: v.color.background,
       }}>
@@ -59,7 +59,7 @@ export default function Order(props) {
             height: 400,
             marginBottom: 32,
           }}>
-          {/* <FlatList
+          <FlatList
             data={listSeat}
             keyExtractor={item => item}
             renderItem={({item}) => (
@@ -70,7 +70,7 @@ export default function Order(props) {
                 selectSeat={handleSelectedSeat}
               />
             )}
-          /> */}
+          />
         </View>
         <Text style={gs.h2}>Order Info</Text>
         <View
