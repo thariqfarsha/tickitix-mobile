@@ -1,13 +1,8 @@
 import React from 'react';
 import MainStackNavigator from './src/navigations';
-import {NativeBaseProvider} from 'native-base';
 
 function App() {
-  return (
-    <NativeBaseProvider>
-      <MainStackNavigator />
-    </NativeBaseProvider>
-  );
+  return <MainStackNavigator />;
 }
 
 export default App;
