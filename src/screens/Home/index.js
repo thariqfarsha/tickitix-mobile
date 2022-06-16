@@ -14,8 +14,12 @@ import MovieCard from '../../components/MovieCard';
 import MonthFilter from '../../components/MonthFilter';
 import Footer from '../../components/Footer';
 
-function Home() {
+function Home(props) {
   const [month, setMonth] = useState(new Date().getMonth() + 1);
+
+  const handleViewNowShowing = () => {
+    props.navigation.navigate('MoviesNavigator', {screen: 'ListMovie'});
+  };
 
   return (
     <ScrollView
@@ -48,14 +52,16 @@ function Home() {
           <Text style={[gs.h2, {color: v.color.primary, marginBottom: 0}]}>
             Now Showing
           </Text>
-          <Text style={gs.link}>view all</Text>
+          <TouchableOpacity onPress={handleViewNowShowing}>
+            <Text style={gs.link}>view all</Text>
+          </TouchableOpacity>
         </View>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          <MovieCard />
-          <MovieCard />
-          <MovieCard />
-          <MovieCard />
-          <MovieCard />
+          <MovieCard {...props} />
+          <MovieCard {...props} />
+          <MovieCard {...props} />
+          <MovieCard {...props} />
+          <MovieCard {...props} />
         </ScrollView>
       </View>
       <View style={gs.container}>
@@ -71,11 +77,11 @@ function Home() {
         </View>
         <MonthFilter month={month} setMonth={setMonth} />
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          <MovieCard />
-          <MovieCard />
-          <MovieCard />
-          <MovieCard />
-          <MovieCard />
+          <MovieCard {...props} />
+          <MovieCard {...props} />
+          <MovieCard {...props} />
+          <MovieCard {...props} />
+          <MovieCard {...props} />
         </ScrollView>
       </View>
 
