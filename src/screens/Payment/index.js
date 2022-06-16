@@ -13,7 +13,7 @@ import v from '../../styles/styleVariables';
 
 export default function Payment() {
   return (
-    <ScrollView showsHorizontalScrollIndicator={false}>
+    <ScrollView showsVerticalScrollIndicator={false}>
       <View
         style={{
           backgroundColor: v.color.white,
