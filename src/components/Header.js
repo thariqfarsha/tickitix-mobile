@@ -15,7 +15,7 @@ export default function Header(props) {
       <View>
         <Image
           source={require('../assets/img/logo/logo-color.png')}
-          style={{height: 28, resizeMode: 'contain'}}
+          style={{width: 110, height: 28, resizeMode: 'contain'}}
         />
       </View>
       <TouchableOpacity onPress={openDrawer}>
