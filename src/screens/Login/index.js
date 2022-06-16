@@ -1,13 +1,7 @@
+/* eslint-disable react-native/no-inline-styles */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, {useState} from 'react';
-import {
-  View,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  Image,
-  TextInput,
-} from 'react-native';
+import {View, Text, TouchableOpacity, Image, TextInput} from 'react-native';
 import gs from '../../styles/globalStyles';
 import axios from '../../utils/axios';
 
@@ -24,7 +18,6 @@ function Login(props) {
   const handleLogin = async () => {
     try {
       const result = await axios.post('auth/login', form);
-      console.log(result.data);
       await AsyncStorage.setItem('id', result.data.data.id);
       await AsyncStorage.setItem('token', result.data.data.token);
       await AsyncStorage.setItem('refreshToken', result.data.data.refreshToken);
@@ -42,7 +35,7 @@ function Login(props) {
 
   return (
     // <View style={{backgroundColor: 'blue'}}>
-    <ScrollView style={gs.container}>
+    <View style={{...gs.container, overflow: 'visible', flex: 1}}>
       <Image
         source={require('../../assets/img/logo/logo-color.png')}
         style={gs.logo}
@@ -90,7 +83,7 @@ function Login(props) {
           Sign up
         </Text>
       </Text>
-    </ScrollView>
+    </View>
   );
 }
 
