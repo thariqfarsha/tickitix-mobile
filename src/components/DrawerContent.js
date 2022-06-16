@@ -1,6 +1,5 @@
-/* eslint-disable react-native/no-inline-styles */
 import React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import {View, Text, StyleSheet, ToastAndroid} from 'react-native';
 import {
   DrawerContentScrollView,
   DrawerItem,
@@ -10,12 +9,16 @@ import {
 import Icon from 'react-native-vector-icons/Feather';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import gs from '../styles/globalStyles';
+import HLine from './HLine';
 
 function DrawerContent(props) {
   const handleLogout = async () => {
     try {
-      alert('Logout');
+      ToastAndroid.showWithGravity(
+        'Logged out',
+        ToastAndroid.SHORT,
+        ToastAndroid.BOTTOM,
+      );
       await AsyncStorage.clear();
       props.navigation.navigate('AuthScreen', {
         screen: 'Login',
@@ -31,10 +34,11 @@ function DrawerContent(props) {
         <View style={styles.containerProfile}>
           <View style={styles.avatar} />
           <View style={styles.biodata}>
-            <Text style={styles.title}>Anonymous</Text>
-            <Text style={styles.caption}>@bagustea | 081234567890</Text>
+            <Text style={styles.title}>John Tyler</Text>
+            <Text style={styles.caption}>@johntyler | 081234567890</Text>
           </View>
         </View>
+        <HLine />
         <DrawerItemList {...props} />
       </DrawerContentScrollView>
       <View style={styles.containerSection}>
@@ -63,7 +67,7 @@ const styles = StyleSheet.create({
     height: 60,
     borderRadius: 40,
     backgroundColor: 'gray',
-    marginBottom: 8,
+    marginBottom: 12,
   },
   biodata: {
     // marginLeft: 15,
