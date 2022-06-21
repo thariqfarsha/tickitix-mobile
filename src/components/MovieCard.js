@@ -4,11 +4,15 @@ import v from '../styles/styleVariables';
 import {View, Image, Text} from 'react-native';
 import gs from '../styles/globalStyles';
 import {TouchableOpacity} from 'react-native-gesture-handler';
+import truncateString from '../utils/truncateString';
 
 export default function MovieCard(props) {
-  const handleDetail = () => {
+  const {name, category, imagePath} = props.data ? props.data : {};
+
+  const handleDetail = dataMovie => {
     props.navigation.navigate('MoviesNavigator', {
       screen: 'MovieDetail',
+      params: dataMovie,
     });
   };
 
@@ -23,20 +27,27 @@ export default function MovieCard(props) {
         borderColor: v.color.line,
       }}>
       <Image
-        source={require('../assets/img/blankPoster.png')}
+        source={
+          imagePath
+            ? {uri: imagePath}
+            : require('../assets/img/blankPoster.png')
+        }
         style={{width: 120, height: 180, borderRadius: 8, marginBottom: 12}}
+        resizeMode="cover"
       />
-      <Text style={[gs.h6, {textAlign: 'center'}]}>Movie Name</Text>
+      <Text style={[gs.h6, {textAlign: 'center'}]}>
+        {name ? truncateString(name, 16) : ''}
+      </Text>
       <Text
         style={[gs.p, {fontSize: 14, textAlign: 'center', marginBottom: 16}]}>
-        Movie Category
+        {category ? truncateString(category) : ''}
       </Text>
       <TouchableOpacity
         style={[
           gs.btnOutlinePrimary,
           {paddingVertical: 8, marginBottom: 0, borderRadius: 8},
         ]}
-        onPress={handleDetail}>
+        onPress={() => handleDetail(props.data)}>
         <Text style={gs.btnOutlinePrimaryText}>Detail</Text>
       </TouchableOpacity>
     </View>
