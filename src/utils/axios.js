@@ -34,7 +34,7 @@ axiosApiInstance.interceptors.response.use(
 
     const refreshToken = await AsyncStorage.getItem('refreshToken');
 
-    if (error.response === 403) {
+    if (error.response.status === 403) {
       if (error.response.data.msg === 'jwt expired') {
         axiosApiInstance
           .post('auth/refresh', {refreshToken})
