@@ -72,7 +72,6 @@ function Seat(props) {
 
 const styles = StyleSheet.create({
   container: {
-    marginHorizontal: 7,
     marginVertical: 3,
     padding: 3,
     flexDirection: 'row',
@@ -87,13 +86,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   centerSide: {
-    flex: 1,
+    // flex: 1,
+    width: 20,
   },
   seat: {
-    width: 16,
-    height: 16,
+    width: 20,
+    height: 20,
     borderRadius: 3,
-    marginHorizontal: 2,
+    marginHorizontal: 4,
   },
   seatAvailable: {
     backgroundColor: '#d6d8e7',
