@@ -1,5 +1,13 @@
+/* eslint-disable react-native/no-inline-styles */
 import React from 'react';
-import {View, Text, StyleSheet, ToastAndroid} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ToastAndroid,
+  ActivityIndicator,
+  Image,
+} from 'react-native';
 import {
   DrawerContentScrollView,
   DrawerItem,
@@ -10,19 +18,28 @@ import Icon from 'react-native-vector-icons/Feather';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import HLine from './HLine';
+import {useDispatch, useSelector} from 'react-redux';
+import {logout} from '../stores/actions/user';
 
 function DrawerContent(props) {
+  const dispatch = useDispatch();
+
+  const isLoading = useSelector(state => state.user.isLoading);
+  const user = useSelector(state => state.user.data);
+
   const handleLogout = async () => {
     try {
+      const refreshToken = await AsyncStorage.getItem('refreshToken');
+      await dispatch(logout(refreshToken));
+      await AsyncStorage.clear();
+      props.navigation.navigate('AuthScreen', {
+        screen: 'Login',
+      });
       ToastAndroid.showWithGravity(
         'Logged out',
         ToastAndroid.SHORT,
         ToastAndroid.BOTTOM,
       );
-      await AsyncStorage.clear();
-      props.navigation.navigate('AuthScreen', {
-        screen: 'Login',
-      });
     } catch (error) {
       console.log(error);
     }
@@ -32,10 +49,21 @@ function DrawerContent(props) {
     <View style={styles.container}>
       <DrawerContentScrollView {...props}>
         <View style={styles.containerProfile}>
-          <View style={styles.avatar} />
+          <View style={styles.avatar}>
+            <Image
+              source={
+                user.imagePath
+                  ? {uri: user.imagePath, width: 60, height: 60}
+                  : require('../assets/img/blankProfile.png')
+              }
+              resizeMode="cover"
+              style={{borderRadius: 100}}
+            />
+          </View>
           <View style={styles.biodata}>
-            <Text style={styles.title}>John Tyler</Text>
-            <Text style={styles.caption}>@johntyler | 081234567890</Text>
+            <Text
+              style={styles.title}>{`${user.firstName} ${user.lastName}`}</Text>
+            <Text style={styles.caption}>@johntyler | {user.noTelp}</Text>
           </View>
         </View>
         <HLine />
@@ -44,9 +72,13 @@ function DrawerContent(props) {
       <View style={styles.containerSection}>
         <DrawerItem
           label="Logout"
-          icon={({color, size}) => (
-            <Icon color={color} size={size} name="log-out" />
-          )}
+          icon={({color, size}) =>
+            isLoading ? (
+              <ActivityIndicator color={color} size="small" />
+            ) : (
+              <Icon color={color} size={size} name="log-out" />
+            )
+          }
           onPress={handleLogout}
         />
       </View>
@@ -66,7 +98,6 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 40,
-    backgroundColor: 'gray',
     marginBottom: 12,
   },
   biodata: {
