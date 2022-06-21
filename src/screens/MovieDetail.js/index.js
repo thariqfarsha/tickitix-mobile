@@ -1,7 +1,15 @@
 /* eslint-disable react-native/no-inline-styles */
 import DateTimePicker from '@react-native-community/datetimepicker';
-import React, {useState} from 'react';
-import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {
+  ActivityIndicator,
+  Image,
+  RefreshControl,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import SelectDropdown from 'react-native-select-dropdown';
 import Icon from 'react-native-vector-icons/Feather';
 import gs from '../../styles/globalStyles';
@@ -9,12 +17,45 @@ import v from '../../styles/styleVariables';
 import ScheduleCard from '../../components/ScheduleCard';
 import HLine from '../../components/HLine';
 import Footer from '../../components/Footer';
+import axios from '../../utils/axios';
+import {useDispatch} from 'react-redux';
+import {createDataBooking} from '../../stores/actions/booking';
 
 export default function MovieDetail(props) {
+  const dispatch = useDispatch();
+
+  const movie = props.route.params;
+
   const [date, setDate] = useState(new Date());
   const [mode, setMode] = useState('date');
   const [show, setShow] = useState(false);
+  const [refresh, setRefresh] = useState(false);
+  const [page, setPage] = useState(1);
+  const limit = 2;
+  const [search, setSearch] = useState('');
+  const [schedules, setSchedules] = useState([]);
+  const [totalPage, setTotalPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [showtime, setShowtime] = useState('');
+  const [dataBooking, setDataBooking] = useState({
+    scheduleId: null,
+    dateBooking: '',
+    timeBooking: '',
+    paymentMethod: '',
+    totalPayment: null,
+    seats: [],
+  });
+
   const cinemaLocation = ['Jakarta', 'Bogor', 'Depok'];
+
+  useEffect(() => {
+    setPage(1);
+    getSchedules();
+  }, []);
+
+  useEffect(() => {
+    getSchedules();
+  }, [page]);
 
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate;
@@ -31,14 +72,48 @@ export default function MovieDetail(props) {
     showMode('date');
   };
 
+  const getSchedules = async () => {
+    try {
+      const result = await axios.get(
+        `schedule?page=${page}&limit=${limit}&movieId=${movie.id}&searchLocation=${search}`,
+      );
+      if (page === 1) {
+        setSchedules(result.data.data);
+        setTotalPage(result.data.pagination.totalPage);
+      } else {
+        setSchedules([...schedules, ...result.data.data]);
+      }
+      setRefresh(false);
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleRefresh = () => {
+    getSchedules();
+  };
+
+  const handleLoadMore = () => {
+    setLoading(true);
+    setPage(page + 1);
+    getSchedules();
+  };
+
   const handleBookSchedule = () => {
+    dispatch(createDataBooking(dataBooking));
     props.navigation.navigate('Order');
   };
+
+  console.log(schedules);
 
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
-      style={{...gs.container, paddingHorizontal: 0}}>
+      style={{...gs.container, paddingHorizontal: 0}}
+      refreshControl={
+        <RefreshControl refreshing={refresh} onRefresh={handleRefresh} />
+      }>
       <View style={{...gs.section, alignItems: 'center', marginBottom: 16}}>
         <View
           style={{
@@ -49,44 +124,47 @@ export default function MovieDetail(props) {
             marginBottom: 16,
           }}>
           <Image
-            source={require('../../assets/img/blankPoster.png')}
-            style={{borderRadius: 12}}
+            source={
+              movie
+                ? {uri: movie.imagePath}
+                : require('../../assets/img/blankPoster.png')
+            }
+            style={{borderRadius: 12, height: 240, width: 160}}
           />
         </View>
-        <Text style={gs.h2}>Movie Title</Text>
-        <Text style={{...gs.p, fontSize: 18}}>Movie Genre</Text>
+        <Text
+          style={{...gs.h2, textAlign: 'center', lineHeight: 36, width: '80%'}}>
+          {movie.name}
+        </Text>
+        <Text style={{...gs.p, fontSize: 18, textAlign: 'center'}}>
+          {movie.category}
+        </Text>
       </View>
       <View style={gs.section}>
         <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
           <View style={{width: '50%', marginBottom: 16}}>
             <Text style={gs.p}>Release Date</Text>
-            <Text style={gs.h5}>June 18, 2022 </Text>
+            <Text style={gs.h5}>
+              {movie ? movie.releaseDate.split('T')[0] : ''}
+            </Text>
           </View>
           <View style={{width: '50%', marginBottom: 16}}>
             <Text style={gs.p}>Directed By</Text>
-            <Text style={gs.h5}>Jon Watss </Text>
+            <Text style={gs.h5}>{movie.director}</Text>
           </View>
           <View style={{width: '50%', marginBottom: 16}}>
             <Text style={gs.p}>Duration</Text>
-            <Text style={gs.h5}>2h 50m</Text>
+            <Text style={gs.h5}>{movie.duration}</Text>
           </View>
           <View style={{width: '50%', marginBottom: 16}}>
             <Text style={gs.p}>Casts</Text>
-            <Text style={gs.h5}>Tom Holland, Robert Downey Jr., etc. </Text>
+            <Text style={gs.h5}>{movie.cast}</Text>
           </View>
         </View>
       </View>
-      <View style={gs.section}>
+      <View style={{...gs.section, marginBottom: 24}}>
         <Text style={gs.h5}>Synopsis</Text>
-        <Text style={gs.p}>
-          Thrilled by his experience with the Avengers, Peter returns home,
-          where he lives with his Aunt May, under the watchful eye of his new
-          mentor Tony Stark, Peter tries to fall back into his normal daily
-          routine - distracted by thoughts of proving himself to be more than
-          just your friendly neighborhood Spider-Man - but when the Vulture
-          emerges as a new villain, everything that Peter holds most important
-          will be threatened.
-        </Text>
+        <Text style={gs.p}>{movie.synopsis}</Text>
       </View>
       <View
         style={{
@@ -146,8 +224,18 @@ export default function MovieDetail(props) {
           />
         </View>
         <View>
-          <ScheduleCard handleBook={handleBookSchedule} />
-          <ScheduleCard handleBook={handleBookSchedule} />
+          {schedules.map(schedule => (
+            <View key={schedule.id}>
+              <ScheduleCard
+                data={schedule}
+                dataBooking={dataBooking}
+                setDataBooking={setDataBooking}
+                handleBook={handleBookSchedule}
+                showtime={showtime}
+                setShowtime={setShowtime}
+              />
+            </View>
+          ))}
         </View>
         <View
           style={{
@@ -156,7 +244,10 @@ export default function MovieDetail(props) {
             marginVertical: 20,
           }}>
           <HLine />
-          <TouchableOpacity style={{paddingHorizontal: 16}}>
+          <TouchableOpacity
+            style={{paddingHorizontal: 16}}
+            onPress={handleLoadMore}
+            disabled={!loading && page === totalPage ? true : false}>
             <Text
               style={{
                 fontSize: 16,
@@ -164,7 +255,13 @@ export default function MovieDetail(props) {
                 fontWeight: '600',
                 marginBottom: 4,
               }}>
-              view more
+              {loading ? (
+                <ActivityIndicator size="small" color={v.color.primary} />
+              ) : page < totalPage ? (
+                'view more'
+              ) : (
+                '\u25cf'
+              )}
             </Text>
           </TouchableOpacity>
           <HLine />

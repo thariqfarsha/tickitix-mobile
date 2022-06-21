@@ -6,17 +6,37 @@ import v from '../styles/styleVariables';
 import HLine from './HLine';
 
 export default function ScheduleCard(props) {
-  const showtimes = [
-    '08:00am',
-    '10:30am',
-    '01:00pm',
-    '02:30pm',
-    '04:00pm',
-    '05:30pm',
-    '07:00pm',
-    '09:30pm',
-  ];
-  const [showtime, setShowtime] = useState('');
+  const {
+    id,
+    premiere,
+    price,
+    location,
+    dateStart,
+    dateEnd,
+    time: times,
+    name,
+  } = props ? props.data : {};
+
+  console.log(times);
+
+  const showtimes = times.split(',');
+
+  const ebv = require('../assets/img/logo/cinema/ebv.id.png');
+  const hiflix = require('../assets/img/logo/cinema/hiflix.png');
+  const cineOne21 = require('../assets/img/logo/cinema/cineOne21.png');
+
+  const selectShowtime = time => {
+    props.setShowtime(`${id}-${time}`);
+    props.setDataBooking({
+      ...props.dataBooking,
+      scheduleId: id,
+      dateBooking: '2022-01-01',
+      timeBooking: time,
+      price,
+      premiere,
+      movieName: name,
+    });
+  };
 
   return (
     <View
@@ -28,23 +48,45 @@ export default function ScheduleCard(props) {
         marginBottom: 20,
       }}>
       <Image
-        source={require('../assets/img/logo/cinema/ebv.id.png')}
-        style={{marginBottom: 16}}
+        source={
+          premiere === 'ebv.id'
+            ? ebv
+            : premiere === 'hiflix'
+            ? hiflix
+            : premiere === 'cineOne21'
+            ? cineOne21
+            : ''
+        }
+        style={{
+          width: premiere === 'cineOne21' ? '60%' : '40%',
+          marginBottom: premiere === 'cineOne21' ? 4 : 16,
+        }}
+        resizeMode="contain"
       />
-      <Text style={gs.p}>Whatever street No.12, South Purwokerto</Text>
+      <Text style={gs.p}>{location}</Text>
       <HLine />
-      <View style={{flexDirection: 'row', flexWrap: 'wrap', marginTop: 12}}>
+      <View
+        style={{
+          flexDirection: 'row',
+          flexWrap: 'wrap',
+          marginTop: 12,
+          justifyContent: 'flex-start',
+          alignItems: 'flex-start',
+        }}>
         {showtimes.map((time, i) => (
           <TouchableOpacity
             key={i}
             style={{width: '25%', marginBottom: 12}}
-            onPress={() => setShowtime(time)}>
+            onPress={() => selectShowtime(time)}>
             <Text
               style={{
                 ...gs.p,
                 textAlign: 'center',
-                color: showtime === time ? v.color.primary : v.color.body,
-                fontWeight: showtime === time ? '600' : '400',
+                color:
+                  props.showtime === `${id}-${time}`
+                    ? v.color.primary
+                    : v.color.body,
+                fontWeight: props.showtime === `${id}-${time}` ? '600' : '400',
               }}>
               {time}
             </Text>
@@ -59,7 +101,7 @@ export default function ScheduleCard(props) {
           paddingVertical: 12,
         }}>
         <Text style={{...gs.p, fontSize: 18}}>Price</Text>
-        <Text style={gs.h5}>Rp 50.000</Text>
+        <Text style={gs.h5}>{price}/seat</Text>
       </View>
       <TouchableOpacity
         style={{
@@ -67,10 +109,20 @@ export default function ScheduleCard(props) {
           width: '100%',
           paddingVertical: 12,
           marginBottom: 0,
+          backgroundColor:
+            +props.showtime.split('-')[0] === +id
+              ? v.color.primary
+              : v.color.placeholder,
+          elevation: +props.showtime.split('-')[0] === +id ? 10 : 0,
         }}
         activeOpacity={0.8}
-        onPress={props.handleBook}>
-        <Text style={gs.btnPrimaryText}>Book now</Text>
+        onPress={props.handleBook}
+        disabled={+props.showtime.split('-')[0] === +id ? false : true}>
+        <Text style={gs.btnPrimaryText}>
+          {+props.showtime.split('-')[0] === +id
+            ? 'Book now'
+            : 'Choose showtime'}
+        </Text>
       </TouchableOpacity>
     </View>
   );
