@@ -1,11 +1,25 @@
 /* eslint-disable react-native/no-inline-styles */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, {useState} from 'react';
-import {View, Text, TouchableOpacity, Image, TextInput} from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  TextInput,
+  ActivityIndicator,
+} from 'react-native';
+import {useDispatch, useSelector} from 'react-redux';
+import {getUserById} from '../../stores/actions/user';
+import user from '../../stores/reducer/user';
 import gs from '../../styles/globalStyles';
+import v from '../../styles/styleVariables';
 import axios from '../../utils/axios';
 
 function Login(props) {
+  const dispatch = useDispatch();
+  const {isLoading} = useSelector(state => state.user);
+
   const [form, setForm] = useState({
     email: '',
     password: '',
@@ -21,6 +35,7 @@ function Login(props) {
       await AsyncStorage.setItem('id', result.data.data.id);
       await AsyncStorage.setItem('token', result.data.data.token);
       await AsyncStorage.setItem('refreshToken', result.data.data.refreshToken);
+      await dispatch(getUserById(result.data.data.id));
       props.navigation.navigate('AppScreen', {
         screen: 'Home',
       });
@@ -72,7 +87,11 @@ function Login(props) {
         style={gs.btnPrimary}
         activeOpacity={0.9}
         onPress={handleLogin}>
-        <Text style={gs.btnPrimaryText}>Sign in</Text>
+        {isLoading ? (
+          <ActivityIndicator color={v.color.white} size="small" />
+        ) : (
+          <Text style={gs.btnPrimaryText}>Sign in</Text>
+        )}
       </TouchableOpacity>
       <Text style={[gs.p, gs.textCenter]}>
         Forgot your password? <Text style={gs.link}>Reset Now</Text>
