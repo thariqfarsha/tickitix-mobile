@@ -16,6 +16,7 @@ import MovieDetail from '../screens/MovieDetail.js';
 import Order from '../screens/Order';
 import Payment from '../screens/Payment';
 import Ticket from '../screens/Ticket.js';
+import Midtrans from '../screens/Midtrans';
 
 function HomeNavigator() {
   return (
@@ -50,6 +51,11 @@ function MoviesNavigator() {
       <Stack.Screen
         component={Payment}
         name="Payment"
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        component={Midtrans}
+        name="Midtrans"
         options={{headerShown: false}}
       />
     </Stack.Navigator>
