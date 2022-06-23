@@ -55,6 +55,52 @@ const user = (state = initialState, action) => {
         msg: action.payload.response.data.msg,
       };
     }
+    case 'UPDATE_PROFILE_PENDING': {
+      return {
+        ...state,
+        isLoading: true,
+        isError: false,
+      };
+    }
+    case 'UPDATE_PROFILE_FULFILLED': {
+      return {
+        ...state,
+        isLoading: false,
+        isError: false,
+        msg: action.payload.data.msg,
+      };
+    }
+    case 'UPDATE_PROFILE_REJECTED': {
+      return {
+        ...state,
+        isLoading: false,
+        isError: true,
+        msg: action.payload.response.data.msg,
+      };
+    }
+    case 'UPDATE_PWD_PENDING': {
+      return {
+        ...state,
+        isLoading: true,
+        isError: false,
+      };
+    }
+    case 'UPDATE_PWD_FULFILLED': {
+      return {
+        ...state,
+        isLoading: false,
+        isError: false,
+        msg: action.payload.data.msg,
+      };
+    }
+    case 'UPDATE_PWD_REJECTED': {
+      return {
+        ...state,
+        isLoading: false,
+        isError: true,
+        msg: action.payload.response.data.msg,
+      };
+    }
     default: {
       return state;
     }

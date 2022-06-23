@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -10,11 +10,17 @@ import {
   Image,
   TextInput,
   ToastAndroid,
+  ActivityIndicator,
 } from 'react-native';
 import {TabView, SceneMap, TabBar} from 'react-native-tab-view';
+import Icon from 'react-native-vector-icons/Feather';
+import {useDispatch, useSelector} from 'react-redux';
+import BookingCard from '../../components/BookingCard';
 import HLine from '../../components/HLine';
+import {getUserById, updateProfile, updatePwd} from '../../stores/actions/user';
 import gs from '../../styles/globalStyles';
 import v from '../../styles/styleVariables';
+import axios from '../../utils/axios';
 
 // const renderScene = SceneMap({
 //   profile: ProfileRoute,
@@ -49,13 +55,18 @@ export default function Profile(props) {
   );
 
   function ProfileRoute() {
+    const dispatch = useDispatch();
+
+    const {data: user, isLoading, msg} = useSelector(state => state.user);
+
+    const [isNewPwdShown, setIsNewPwdShown] = useState(false);
+    const [isConfirmPwdShown, setIsConfirmPwdShown] = useState(false);
     const [isUpdateProfile, setIsUpdateProfile] = useState(false);
     const [isUpdatePwd, setIsUpdatePwd] = useState(false);
     const [formProfile, setFormProfile] = useState({
-      firstName: 'John',
-      lastName: 'Tyler',
-      email: 'johntyler@gmail.com',
-      noTelp: '081234567890',
+      firstName: user.firstName,
+      lastName: user.lastName,
+      noTelp: user.noTelp,
     });
     const [formPwd, setFormPwd] = useState({
       newPassword: '',
@@ -86,12 +97,38 @@ export default function Profile(props) {
       setFormPwd({...formPwd, [name]: value});
     };
 
-    const handleUpdateProfile = () => {
-      setIsUpdateProfile(false);
+    const handleUpdateProfile = async () => {
+      try {
+        await dispatch(updateProfile(user.id, formProfile));
+        await dispatch(getUserById(user.id));
+        setIsUpdateProfile(false);
+        ToastAndroid.showWithGravity(
+          'Profile updated',
+          ToastAndroid.SHORT,
+          ToastAndroid.BOTTOM,
+        );
+      } catch (error) {
+        console.log(error);
+      }
     };
 
-    const handleUpdatePwd = () => {
-      setIsUpdatePwd(false);
+    const handleUpdatePwd = async () => {
+      try {
+        await dispatch(updatePwd(user.id, formPwd));
+        setIsUpdatePwd(false);
+        ToastAndroid.showWithGravity(
+          'Password updated',
+          ToastAndroid.SHORT,
+          ToastAndroid.BOTTOM,
+        );
+      } catch (error) {
+        console.log(error);
+        ToastAndroid.showWithGravity(
+          `${msg}`,
+          ToastAndroid.LONG,
+          ToastAndroid.BOTTOM,
+        );
+      }
     };
 
     return (
@@ -108,7 +145,11 @@ export default function Profile(props) {
               marginBottom: 32,
             }}>
             <Image
-              source={require('../../assets/img/blankProfile.png')}
+              source={
+                user.imagePath
+                  ? {uri: user.imagePath}
+                  : require('../../assets/img/blankProfile.png')
+              }
               style={{
                 height: 100,
                 width: 100,
@@ -117,7 +158,11 @@ export default function Profile(props) {
                 marginBottom: 28,
               }}
             />
-            <Text style={{...gs.h2, marginBottom: 8}}>John Tyler</Text>
+            <Text
+              style={{
+                ...gs.h2,
+                marginBottom: 8,
+              }}>{`${user.firstName} ${user.lastName}`}</Text>
             <Text style={gs.p}>Moviegoers</Text>
             <TouchableOpacity
               style={{
@@ -137,6 +182,7 @@ export default function Profile(props) {
               backgroundColor: v.color.white,
               borderRadius: 20,
               padding: 32,
+              marginBottom: 32,
             }}>
             <Text style={{...gs.h3, marginBottom: 0}}>Details Information</Text>
             <HLine />
@@ -164,7 +210,7 @@ export default function Profile(props) {
               <Text style={gs.label}>Email</Text>
               <TextInput
                 style={gs.textInput}
-                value={formProfile.email}
+                value={user.email}
                 editable={false}
               />
             </View>
@@ -181,6 +227,7 @@ export default function Profile(props) {
             {!isUpdateProfile ? (
               <TouchableOpacity
                 style={{...gs.btnPrimary, marginTop: 8, marginBottom: 0}}
+                activeOpacity={0.8}
                 onPress={() => setIsUpdateProfile(true)}>
                 <Text style={gs.btnPrimaryText}>Update Profile</Text>
               </TouchableOpacity>
@@ -188,8 +235,13 @@ export default function Profile(props) {
               <>
                 <TouchableOpacity
                   style={{...gs.btnPrimary, marginTop: 8, marginBottom: 4}}
+                  activeOpacity={0.8}
                   onPress={handleUpdateProfile}>
-                  <Text style={gs.btnPrimaryText}>Save Changes</Text>
+                  {isLoading ? (
+                    <ActivityIndicator size="small" color={v.color.white} />
+                  ) : (
+                    <Text style={gs.btnPrimaryText}>Save Changes</Text>
+                  )}
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={{
@@ -197,6 +249,7 @@ export default function Profile(props) {
                     marginTop: 8,
                     marginBottom: 0,
                   }}
+                  activeOpacity={0.8}
                   onPress={() => setIsUpdateProfile(false)}>
                   <Text style={gs.btnOutlinePrimaryText}>Cancel</Text>
                 </TouchableOpacity>
@@ -215,6 +268,7 @@ export default function Profile(props) {
             {!isUpdatePwd ? (
               <TouchableOpacity
                 style={{...gs.btnPrimary, marginTop: 8, marginBottom: 0}}
+                activeOpacity={0.8}
                 onPress={() => setIsUpdatePwd(true)}>
                 <Text style={gs.btnPrimaryText}>Update Password</Text>
               </TouchableOpacity>
@@ -222,30 +276,69 @@ export default function Profile(props) {
               <>
                 <View style={gs.inputGroup}>
                   <Text style={gs.label}>New Password</Text>
-                  <TextInput
-                    style={gs.textInput}
-                    placeholder="Enter new password"
-                    onChangeText={text =>
-                      handleChangeFormPwd(text, 'newPassword')
-                    }
-                    secureTextEntry={true}
-                  />
+                  <View style={{position: 'relative'}}>
+                    <TextInput
+                      style={gs.textInput}
+                      placeholder="Enter new password"
+                      onChangeText={text =>
+                        handleChangeFormPwd(text, 'newPassword')
+                      }
+                      secureTextEntry={isNewPwdShown ? false : true}
+                    />
+                    <TouchableOpacity
+                      style={{
+                        position: 'absolute',
+                        right: 0,
+                        height: '100%',
+                        paddingHorizontal: 12,
+                        justifyContent: 'center',
+                      }}
+                      onPress={() => setIsNewPwdShown(!isNewPwdShown)}>
+                      {isNewPwdShown ? (
+                        <Icon name="eye-off" size={18} />
+                      ) : (
+                        <Icon name="eye" size={18} />
+                      )}
+                    </TouchableOpacity>
+                  </View>
                 </View>
                 <View style={gs.inputGroup}>
                   <Text style={gs.label}>Confirm Password</Text>
-                  <TextInput
-                    style={gs.textInput}
-                    placeholder="Confirm your new password"
-                    onChangeText={text =>
-                      handleChangeFormPwd(text, 'confirmPassword')
-                    }
-                    secureTextEntry={true}
-                  />
+                  <View style={{position: 'relative'}}>
+                    <TextInput
+                      style={gs.textInput}
+                      placeholder="Confirm your new password"
+                      onChangeText={text =>
+                        handleChangeFormPwd(text, 'confirmPassword')
+                      }
+                      secureTextEntry={isConfirmPwdShown ? false : true}
+                    />
+                    <TouchableOpacity
+                      style={{
+                        position: 'absolute',
+                        right: 0,
+                        height: '100%',
+                        paddingHorizontal: 12,
+                        justifyContent: 'center',
+                      }}
+                      onPress={() => setIsConfirmPwdShown(!isConfirmPwdShown)}>
+                      {isConfirmPwdShown ? (
+                        <Icon name="eye-off" size={18} />
+                      ) : (
+                        <Icon name="eye" size={18} />
+                      )}
+                    </TouchableOpacity>
+                  </View>
                 </View>
                 <TouchableOpacity
                   style={{...gs.btnPrimary, marginTop: 8, marginBottom: 4}}
+                  activeOpacity={0.8}
                   onPress={handleUpdatePwd}>
-                  <Text style={gs.btnPrimaryText}>Save Changes</Text>
+                  {isLoading ? (
+                    <ActivityIndicator size="small" color={v.color.white} />
+                  ) : (
+                    <Text style={gs.btnPrimaryText}>Save Changes</Text>
+                  )}
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={{
@@ -265,8 +358,25 @@ export default function Profile(props) {
   }
 
   function HistoryRoute() {
-    const handleOpenTicket = () => {
-      props.navigation.navigate('Ticket');
+    const user = useSelector(state => state.user.data);
+
+    const [bookingList, setBookingList] = useState([]);
+
+    useEffect(() => {
+      getBookingList();
+    }, []);
+
+    const getBookingList = async () => {
+      try {
+        const result = await axios.get(`booking/user/${user.id}`);
+        setBookingList(result.data.data);
+      } catch (error) {
+        console.log(error.response.data);
+      }
+    };
+
+    const handleOpenTicket = id => {
+      props.navigation.navigate('Ticket', {orderId: id});
     };
 
     return (
@@ -278,105 +388,11 @@ export default function Profile(props) {
             ...gs.container,
             backgroundColor: 'transparent',
           }}>
-          <View
-            style={{
-              backgroundColor: v.color.white,
-              borderRadius: 16,
-              padding: 32,
-              marginBottom: 20,
-              elevation: 8,
-            }}>
-            <Image
-              source={require('../../assets/img/logo/cinema/cineOne21.png')}
-              style={{
-                width: 100,
-                height: 30,
-                resizeMode: 'contain',
-                marginBottom: 12,
-              }}
-            />
-            <Text style={gs.p}>Tuesday, 07 July 2022 - 04:30pm</Text>
-            <Text style={gs.h3}>Spider-Man: Homecoming</Text>
-            <HLine />
-            <TouchableOpacity
-              style={{
-                ...gs.btnPrimary,
-                backgroundColor: v.color.success,
-                shadowColor: v.color.success,
-                marginBottom: 0,
-                marginTop: 8,
-              }}
-              activeOpacity={0.8}
-              onPress={handleOpenTicket}>
-              <Text style={{...gs.btnPrimaryText}}>Ticket in active</Text>
-            </TouchableOpacity>
-          </View>
-          <View
-            style={{
-              backgroundColor: v.color.white,
-              borderRadius: 16,
-              padding: 32,
-              marginBottom: 20,
-              elevation: 8,
-            }}>
-            <Image
-              source={require('../../assets/img/logo/cinema/ebv.id.png')}
-              style={{
-                width: 100,
-                height: 30,
-                resizeMode: 'contain',
-                marginBottom: 12,
-              }}
-            />
-            <Text style={gs.p}>Tuesday, 14 June 2022 - 02:00pm</Text>
-            <Text style={gs.h3}>Avengers: End Game</Text>
-            <HLine />
-            <TouchableOpacity
-              style={{
-                ...gs.btnPrimary,
-                backgroundColor: v.color.body,
-                shadowColor: 'transparent',
-                marginBottom: 0,
-                marginTop: 8,
-              }}
-              activeOpacity={0.8}
-              disabled>
-              <Text style={{...gs.btnPrimaryText}}>Ticket used</Text>
-            </TouchableOpacity>
-          </View>
-          <View
-            style={{
-              backgroundColor: v.color.white,
-              borderRadius: 16,
-              padding: 32,
-              marginBottom: 20,
-              elevation: 8,
-            }}>
-            <Image
-              source={require('../../assets/img/logo/cinema/hiflix.png')}
-              style={{
-                width: 100,
-                height: 30,
-                resizeMode: 'contain',
-                marginBottom: 12,
-              }}
-            />
-            <Text style={gs.p}>Tuesday, 7 June 2022 - 02:00pm</Text>
-            <Text style={gs.h3}>Dr. Strange</Text>
-            <HLine />
-            <TouchableOpacity
-              style={{
-                ...gs.btnPrimary,
-                backgroundColor: v.color.body,
-                shadowColor: 'transparent',
-                marginBottom: 0,
-                marginTop: 8,
-              }}
-              activeOpacity={0.8}
-              disabled>
-              <Text style={{...gs.btnPrimaryText}}>Ticket used</Text>
-            </TouchableOpacity>
-          </View>
+          {bookingList.map(booking => (
+            <View key={booking.id}>
+              <BookingCard data={booking} handleOpenTicket={handleOpenTicket} />
+            </View>
+          ))}
         </View>
       </ScrollView>
     );
