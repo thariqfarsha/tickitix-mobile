@@ -17,8 +17,6 @@ export default function ScheduleCard(props) {
     name,
   } = props ? props.data : {};
 
-  console.log(times);
-
   const showtimes = times.split(',');
 
   const ebv = require('../assets/img/logo/cinema/ebv.id.png');

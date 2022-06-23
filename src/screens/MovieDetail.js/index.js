@@ -9,6 +9,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  BackHandler,
 } from 'react-native';
 import SelectDropdown from 'react-native-select-dropdown';
 import Icon from 'react-native-vector-icons/Feather';
@@ -47,15 +48,30 @@ export default function MovieDetail(props) {
   });
 
   const cinemaLocation = ['Jakarta', 'Bogor', 'Depok'];
-
   useEffect(() => {
+    console.log('get schedule');
     setPage(1);
     getSchedules();
+    BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick);
+    return () => {
+      BackHandler.removeEventListener(
+        'hardwareBackPress',
+        handleBackButtonClick,
+      );
+    };
   }, []);
-
+  console.log(page);
   useEffect(() => {
+    console.log('get schedule update');
     getSchedules();
-  }, [page]);
+  }, [page, movie.id]);
+
+  function handleBackButtonClick() {
+    console.log('btn back is clicked');
+    setPage(1);
+    props.navigation.goBack();
+    return true;
+  }
 
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate;
@@ -91,21 +107,19 @@ export default function MovieDetail(props) {
   };
 
   const handleRefresh = () => {
+    setPage(1);
     getSchedules();
   };
 
   const handleLoadMore = () => {
     setLoading(true);
     setPage(page + 1);
-    getSchedules();
   };
 
   const handleBookSchedule = () => {
     dispatch(createDataBooking(dataBooking));
     props.navigation.navigate('Order');
   };
-
-  console.log(schedules);
 
   return (
     <ScrollView
