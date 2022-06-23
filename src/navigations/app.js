@@ -32,7 +32,7 @@ function HomeNavigator() {
 
 function MoviesNavigator() {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator initialRouteName="ListMovie">
       <Stack.Screen
         component={ListMovie}
         name="ListMovie"
@@ -64,7 +64,7 @@ function MoviesNavigator() {
 
 function ProfileNavigator() {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator initialRouteName="Profile">
       <Stack.Screen
         component={Profile}
         name="Profile"
