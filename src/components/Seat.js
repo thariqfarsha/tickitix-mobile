@@ -39,6 +39,7 @@ function Seat(props) {
               onPress={() => {
                 props.reserved.includes(item) ? null : props.selectSeat(item);
               }}
+              disabled={props.reserved.includes(item) ? true : false}
             />
           )}
         />
@@ -62,6 +63,7 @@ function Seat(props) {
               onPress={() => {
                 props.reserved.includes(item) ? null : props.selectSeat(item);
               }}
+              disabled={props.reserved.includes(item) ? true : false}
             />
           )}
         />

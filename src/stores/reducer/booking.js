@@ -10,6 +10,12 @@ const booking = (state = initialState, action) => {
     case 'CREATE_DATA_BOOKING': {
       return {
         ...state,
+        data: action.data,
+      };
+    }
+    case 'UPDATE_DATA_BOOKING': {
+      return {
+        ...state,
         data: {...state.data, ...action.data},
       };
     }

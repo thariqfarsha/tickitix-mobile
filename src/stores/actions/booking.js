@@ -7,6 +7,13 @@ export const createDataBooking = dataBooking => {
   };
 };
 
+export const updateDataBooking = dataBooking => {
+  return {
+    type: 'UPDATE_DATA_BOOKING',
+    data: dataBooking,
+  };
+};
+
 export const createBooking = formBooking => {
   return {
     type: 'CREATE_BOOKING',

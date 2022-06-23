@@ -15,25 +15,38 @@ import gs from '../../styles/globalStyles';
 import v from '../../styles/styleVariables';
 import Icon from 'react-native-vector-icons/Feather';
 import {useDispatch, useSelector} from 'react-redux';
-import {createDataBooking} from '../../stores/actions/booking';
+import {updateDataBooking} from '../../stores/actions/booking';
+import axios from '../../utils/axios';
 
 export default function Order(props) {
   const dispatch = useDispatch();
 
   const listSeat = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
   const [selectedSeat, setSelectedSeat] = useState([]);
-  const [reservedSeat, setReservedSeat] = useState(['A1', 'C7']);
+  const [reservedSeat, setReservedSeat] = useState([]);
   const [totalPayment, setTotalPayment] = useState(null);
 
   const dataBooking = useSelector(state => state.booking.data);
 
   useEffect(() => {
-    console.log('order params: ' + props.route.params);
-  }, []);
+    getReservedSeat();
+  }, [dataBooking.scheduleId, dataBooking.timeBooking]);
 
   useEffect(() => {
     setTotalPayment(selectedSeat.length * +dataBooking.price);
   }, [selectedSeat]);
+
+  const getReservedSeat = async () => {
+    try {
+      const result = await axios.get(
+        `booking/seat/?scheduleId=${dataBooking.scheduleId}&dateBooking=${dataBooking.dateBooking}&timeBooking=${dataBooking.timeBooking}`,
+      );
+      console.log(result.data);
+      setReservedSeat(result.data.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleSelectedSeat = data => {
     if (selectedSeat.includes(data)) {
@@ -47,7 +60,7 @@ export default function Order(props) {
   };
 
   const handleBookingSeat = () => {
-    dispatch(createDataBooking({seats: selectedSeat, totalPayment}));
+    dispatch(updateDataBooking({seats: selectedSeat, totalPayment}));
     props.navigation.navigate('Payment');
   };
 
