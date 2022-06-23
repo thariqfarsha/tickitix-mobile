@@ -1,8 +1,9 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {URL_BACKEND} from '@env';
 
 const axiosApiInstance = axios.create({
-  baseURL: 'https://tickitix.herokuapp.com/',
+  baseURL: URL_BACKEND,
 });
 
 // Add a request interceptor
@@ -45,11 +46,13 @@ axiosApiInstance.interceptors.response.use(
               res.data.data.refreshToken,
             );
           })
-          .catch(async () => {
+          .catch(async err => {
+            console.log(err);
             await AsyncStorage.removeItem('token');
             await AsyncStorage.removeItem('refreshToken');
           });
       } else {
+        console.log(error.response);
         await AsyncStorage.removeItem('token');
         await AsyncStorage.removeItem('refreshToken');
       }
