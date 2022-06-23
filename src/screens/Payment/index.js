@@ -115,7 +115,11 @@ export default function Payment(props) {
           activeOpacity={0.8}
           onPress={handlePayment}>
           <Text style={gs.btnPrimaryText}>
-            {isLoading ? <ActivityIndicator size="small" /> : 'Pay your order'}
+            {isLoading ? (
+              <ActivityIndicator size="small" color={v.color.white} />
+            ) : (
+              'Pay your order'
+            )}
           </Text>
         </TouchableOpacity>
       </View>
