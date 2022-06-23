@@ -1,12 +1,30 @@
 /* eslint-disable react-native/no-inline-styles */
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {ScrollView, Text, View} from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 import gs from '../../styles/globalStyles';
 import v from '../../styles/styleVariables';
+import axios from '../../utils/axios';
 
-export default function Ticket() {
+export default function Ticket(props) {
+  const {orderId} = props.route.params;
+
   const edgeSize = 24;
+  const [booking, setBooking] = useState({});
+
+  useEffect(() => {
+    getBooking();
+  }, []);
+
+  const getBooking = async () => {
+    try {
+      const result = await axios.get(`booking/id/${orderId}`);
+      setBooking(result.data.data);
+      console.log(result.data.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <ScrollView
@@ -44,7 +62,7 @@ export default function Ticket() {
           </View>
           <View style={{marginVertical: 24}}>
             <QRCode
-              value="https://tickitix.herokuapp.com/booking/ticket/9"
+              value={`https://tickitix.herokuapp.com/booking/ticket/${orderId}`}
               size={140}
             />
           </View>
@@ -119,27 +137,33 @@ export default function Ticket() {
             }}>
             <View style={{width: '55%', marginBottom: 12}}>
               <Text style={gs.p}>Movie</Text>
-              <Text style={gs.h5}>Spiderman</Text>
+              <Text style={gs.h5}>{booking.name}</Text>
             </View>
             <View style={{width: '45%', marginBottom: 12}}>
               <Text style={gs.p}>Category</Text>
-              <Text style={gs.h5}>Action</Text>
+              <Text style={gs.h5}>{booking.category}</Text>
             </View>
             <View style={{width: '55%', marginBottom: 12}}>
               <Text style={gs.p}>Date</Text>
-              <Text style={gs.h5}>July 7</Text>
+              <Text style={gs.h5}>
+                {booking.dateBooking ? booking.dateBooking.split('T')[0] : ''}
+              </Text>
             </View>
             <View style={{width: '45%', marginBottom: 12}}>
               <Text style={gs.p}>Time</Text>
-              <Text style={gs.h5}>2:00pm</Text>
+              <Text style={gs.h5}>{booking.timeBooking}</Text>
             </View>
             <View style={{width: '55%', marginBottom: 12}}>
               <Text style={gs.p}>Count</Text>
-              <Text style={gs.h5}>3 pcs</Text>
+              <Text style={gs.h5}>{`${booking.totalTicket} ${
+                booking.totalTicket > 1 ? 'pcs' : 'pc'
+              }`}</Text>
             </View>
             <View style={{width: '45%', marginBottom: 12}}>
               <Text style={gs.p}>Seats</Text>
-              <Text style={gs.h5}>C1, C2, C3</Text>
+              <Text style={gs.h5}>
+                {booking.seat ? booking.seat.join(', ') : ''}
+              </Text>
             </View>
           </View>
           <View
@@ -154,7 +178,9 @@ export default function Ticket() {
               marginBottom: 20,
             }}>
             <Text style={{...gs.h5, marginBottom: 0}}>Total</Text>
-            <Text style={{...gs.h5, marginBottom: 0}}>Rp 150.000</Text>
+            <Text style={{...gs.h5, marginBottom: 0}}>
+              {booking.totalPayment}
+            </Text>
           </View>
           <View
             style={{
