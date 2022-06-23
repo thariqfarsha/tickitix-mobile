@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -8,10 +8,11 @@ import {
   Image,
   TextInput,
   ActivityIndicator,
+  ToastAndroid,
 } from 'react-native';
+import Icon from 'react-native-vector-icons/Feather';
 import {useDispatch, useSelector} from 'react-redux';
 import {getUserById} from '../../stores/actions/user';
-import user from '../../stores/reducer/user';
 import gs from '../../styles/globalStyles';
 import v from '../../styles/styleVariables';
 import axios from '../../utils/axios';
@@ -20,10 +21,18 @@ function Login(props) {
   const dispatch = useDispatch();
   const {isLoading} = useSelector(state => state.user);
 
+  const [isPwdShown, setIsPwdShown] = useState(false);
   const [form, setForm] = useState({
     email: '',
     password: '',
   });
+
+  useEffect(() => {
+    setForm({
+      email: '',
+      password: '',
+    });
+  }, []);
 
   const handleChangeForm = (text, name) => {
     setForm({...form, [name]: text});
@@ -41,6 +50,11 @@ function Login(props) {
       });
     } catch (error) {
       console.log(error);
+      ToastAndroid.showWithGravity(
+        `${error.response.data.msg}`,
+        ToastAndroid.SHORT,
+        ToastAndroid.BOTTOM,
+      );
     }
   };
 
@@ -74,14 +88,31 @@ function Login(props) {
       </View>
       <View style={[gs.inputGroup, gs.lastInputGroup]}>
         <Text style={gs.label}>Password</Text>
-        <TextInput
-          style={gs.textInput}
-          onChangeText={text => handleChangeForm(text, 'password')}
-          placeholder="Enter your password"
-          autoCapitalize="none"
-          secureTextEntry={true}
-          placeholderTextColor={gs.placeholder.color}
-        />
+        <View style={{position: 'relative'}}>
+          <TextInput
+            style={gs.textInput}
+            onChangeText={text => handleChangeForm(text, 'password')}
+            placeholder="Enter your password"
+            autoCapitalize="none"
+            secureTextEntry={isPwdShown ? false : true}
+            placeholderTextColor={gs.placeholder.color}
+          />
+          <TouchableOpacity
+            style={{
+              position: 'absolute',
+              right: 0,
+              height: '100%',
+              paddingHorizontal: 12,
+              justifyContent: 'center',
+            }}
+            onPress={() => setIsPwdShown(!isPwdShown)}>
+            {isPwdShown ? (
+              <Icon name="eye-off" size={18} />
+            ) : (
+              <Icon name="eye" size={18} />
+            )}
+          </TouchableOpacity>
+        </View>
       </View>
       <TouchableOpacity
         style={gs.btnPrimary}
