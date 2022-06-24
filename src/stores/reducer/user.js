@@ -101,6 +101,30 @@ const user = (state = initialState, action) => {
         msg: action.payload.response.data.msg,
       };
     }
+    case 'REGISTRATION_PENDING': {
+      return {
+        ...state,
+        isLoading: true,
+        isError: false,
+      };
+    }
+    case 'REGISTRATION_FULFILLED': {
+      return {
+        ...state,
+        isLoading: false,
+        isError: false,
+        data: action.payload.data.data,
+        msg: action.payload.data.msg,
+      };
+    }
+    case 'REGISTRATION_REJECTED': {
+      return {
+        ...state,
+        isError: true,
+        isLoading: false,
+        msg: action.payload.response.data.msg,
+      };
+    }
     default: {
       return state;
     }

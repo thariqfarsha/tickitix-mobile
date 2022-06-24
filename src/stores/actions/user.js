@@ -27,3 +27,10 @@ export const updatePwd = (userId, formPwd) => {
     payload: axios.patch(`user/password/${userId}`, formPwd),
   };
 };
+
+export const registration = form => {
+  return {
+    type: 'REGISTRATION',
+    payload: axios.post('auth/register', form),
+  };
+};

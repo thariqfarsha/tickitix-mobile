@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   ScrollView,
@@ -6,16 +6,61 @@ import {
   TouchableOpacity,
   Image,
   TextInput,
+  ToastAndroid,
+  ActivityIndicator,
 } from 'react-native';
+import {useDispatch, useSelector} from 'react-redux';
+import {registration} from '../../stores/actions/user';
 import gs from '../../styles/globalStyles';
+import v from '../../styles/styleVariables';
+import axios from '../../utils/axios';
 
 function Register(props) {
-  const [email, onChangeEmail] = useState('');
-  const [pwd, onChangePwd] = useState('');
+  const dispatch = useDispatch();
 
-  const handleRegister = () => {
-    return;
+  const {isLoading, msg} = useSelector(state => state.user);
+
+  const [form, setForm] = useState({
+    firstName: '',
+    lastName: '',
+    noTelp: '',
+    email: '',
+    password: '',
+  });
+
+  useEffect(() => {
+    setForm({
+      firstName: '',
+      lastName: '',
+      noTelp: '',
+      email: '',
+      password: '',
+    });
+  }, []);
+
+  const handleChangeForm = (text, name) => {
+    setForm({...form, [name]: text});
   };
+
+  const handleRegister = async () => {
+    try {
+      await dispatch(registration(form));
+
+      ToastAndroid.showWithGravity(
+        `${msg}`,
+        ToastAndroid.LONG,
+        ToastAndroid.BOTTOM,
+      );
+    } catch (error) {
+      console.log(error);
+      ToastAndroid.showWithGravity(
+        `${error.response.data.msg}`,
+        ToastAndroid.LONG,
+        ToastAndroid.BOTTOM,
+      );
+    }
+  };
+  console.log(form);
 
   const toLogin = () => {
     props.navigation.navigate('Login');
@@ -38,6 +83,7 @@ function Register(props) {
           style={gs.textInput}
           placeholder="First name"
           placeholderTextColor={gs.placeholder.color}
+          onChangeText={text => handleChangeForm(text, 'firstName')}
         />
       </View>
       <View style={gs.inputGroup}>
@@ -46,6 +92,7 @@ function Register(props) {
           style={gs.textInput}
           placeholder="Last name"
           placeholderTextColor={gs.placeholder.color}
+          onChangeText={text => handleChangeForm(text, 'lastName')}
         />
       </View>
       <View style={gs.inputGroup}>
@@ -56,37 +103,42 @@ function Register(props) {
           placeholderTextColor={gs.placeholder.color}
           keyboardType="number-pad"
           maxLength={13}
+          onChangeText={text => handleChangeForm(text, 'noTelp')}
         />
       </View>
       <View style={gs.inputGroup}>
         <Text style={gs.label}>Email</Text>
         <TextInput
           style={gs.textInput}
-          onChangeText={onChangeEmail}
-          value={email}
           placeholder="Enter your email"
           autoCapitalize="none"
           keyboardType="email-address"
           placeholderTextColor={gs.placeholder.color}
+          onChangeText={text => handleChangeForm(text, 'email')}
         />
       </View>
       <View style={[gs.inputGroup, gs.lastInputGroup]}>
         <Text style={gs.label}>Password</Text>
         <TextInput
           style={gs.textInput}
-          onChangeText={onChangePwd}
-          value={pwd}
           placeholder="Enter your password"
           autoCapitalize="none"
           secureTextEntry={true}
           placeholderTextColor={gs.placeholder.color}
+          onChangeText={text => handleChangeForm(text, 'password')}
         />
       </View>
       <TouchableOpacity
         style={gs.btnPrimary}
         activeOpacity={0.9}
         onPress={handleRegister}>
-        <Text style={gs.btnPrimaryText}>Sign up</Text>
+        <Text style={gs.btnPrimaryText}>
+          {isLoading ? (
+            <ActivityIndicator size="small" color={v.color.white} />
+          ) : (
+            'Sign up'
+          )}
+        </Text>
       </TouchableOpacity>
       <Text style={[gs.p, gs.textCenter]}>
         Already have an account?{' '}
