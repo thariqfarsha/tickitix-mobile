@@ -90,6 +90,12 @@ const gs = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
+  btnPrimaryDisabled: {
+    backgroundColor: '#ac9cd9',
+    borderRadius: 12,
+    paddingVertical: 12,
+    marginBottom: 16,
+  },
   btnOutlinePrimary: {
     backgroundColor: v.color.white,
     borderColor: v.color.primary,
