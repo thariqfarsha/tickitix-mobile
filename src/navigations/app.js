@@ -17,6 +17,7 @@ import Order from '../screens/Order';
 import Payment from '../screens/Payment';
 import Ticket from '../screens/Ticket.js';
 import Midtrans from '../screens/Midtrans';
+import Notification from '../screens/Notification';
 
 function HomeNavigator() {
   return (
@@ -124,6 +125,17 @@ function AppNavigator() {
           drawerActiveBackgroundColor: '#e0d7f7',
           drawerActiveTintColor: v.color.primary,
           // drawerItemStyle: {paddingVertical: 4, paddingHorizontal: 4},
+        }}
+      />
+      <Drawer.Screen
+        component={Notification}
+        name="Notification"
+        options={{
+          title: 'Notification',
+          header: props => <Header {...props} />,
+          drawerIcon: ({size, color}) => (
+            <Icon name="bell" size={size} color={color} />
+          ),
         }}
       />
     </Drawer.Navigator>
