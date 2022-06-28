@@ -3,7 +3,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {URL_BACKEND} from '@env';
 
 const axiosApiInstance = axios.create({
-  baseURL: URL_BACKEND,
+  baseURL: 'http://127.0.0.1:3001/',
+  // baseURL: 'https://tickitix.herokuapp.com/',
 });
 
 // Add a request interceptor
