@@ -51,19 +51,19 @@ function DrawerContent(props) {
         <View style={styles.containerProfile}>
           <View style={styles.avatar}>
             <Image
-              source={
-                user.imagePath
-                  ? {uri: user.imagePath, width: 60, height: 60}
-                  : require('../assets/img/blankProfile.png')
-              }
+              source={{
+                uri: user.imagePath
+                  ? user.imagePath
+                  : `https://ui-avatars.com/api/?name=${user.firstName}+${user.lastName}&background=random&size=192`,
+              }}
               resizeMode="cover"
-              style={{borderRadius: 100}}
+              style={{borderRadius: 100, width: 60, height: 60}}
             />
           </View>
           <View style={styles.biodata}>
             <Text
               style={styles.title}>{`${user.firstName} ${user.lastName}`}</Text>
-            <Text style={styles.caption}>@johntyler | {user.noTelp}</Text>
+            <Text style={styles.caption}>{user.noTelp}</Text>
           </View>
         </View>
         <HLine />

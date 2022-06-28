@@ -64,9 +64,14 @@ export default function Order(props) {
     props.navigation.navigate('Payment');
   };
 
-  const ebv = require('../../assets/img/logo/cinema/ebv.id.png');
-  const hiflix = require('../../assets/img/logo/cinema/hiflix.png');
-  const cineOne21 = require('../../assets/img/logo/cinema/cineOne21.png');
+  const cinemaLogo =
+    dataBooking.premiere === 'ebv.id'
+      ? require('../../assets/img/logo/cinema/ebv.id.png')
+      : dataBooking.premiere === 'hiflix'
+      ? require('../../assets/img/logo/cinema/hiflix.png')
+      : dataBooking.premiere === 'cineOne21'
+      ? require('../../assets/img/logo/cinema/cineOne21.png')
+      : '';
 
   return (
     <ScrollView
@@ -215,15 +220,7 @@ export default function Order(props) {
             marginBottom: 40,
           }}>
           <Image
-            source={
-              dataBooking.premiere === 'ebv.id'
-                ? ebv
-                : dataBooking.premiere === 'hiflix'
-                ? hiflix
-                : dataBooking.premiere === 'cineOne21'
-                ? cineOne21
-                : ''
-            }
+            source={cinemaLogo}
             style={{
               marginBottom: 8,
               width: dataBooking.premiere === 'cineOne21' ? '40%' : '30%',

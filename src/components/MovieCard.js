@@ -16,6 +16,12 @@ export default function MovieCard(props) {
     });
   };
 
+  const moviePoster = {
+    uri: imagePath
+      ? imagePath
+      : 'https://via.assets.so/img.jpg?w=400&h=150&tc=gray&bg=#cecece&t=...',
+  };
+
   return (
     <View
       style={{
@@ -27,11 +33,7 @@ export default function MovieCard(props) {
         borderColor: v.color.line,
       }}>
       <Image
-        source={
-          imagePath
-            ? {uri: imagePath}
-            : require('../assets/img/blankPoster.png')
-        }
+        source={moviePoster}
         style={{width: 120, height: 180, borderRadius: 8, marginBottom: 12}}
         resizeMode="cover"
       />
