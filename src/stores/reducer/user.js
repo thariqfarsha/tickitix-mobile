@@ -106,6 +106,7 @@ const user = (state = initialState, action) => {
         ...state,
         isLoading: true,
         isError: false,
+        msg: '',
       };
     }
     case 'REGISTRATION_FULFILLED': {
