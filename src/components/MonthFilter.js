@@ -3,6 +3,7 @@ import React from 'react';
 import {ScrollView, Text} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import gs from '../styles/globalStyles';
+import v from '../styles/styleVariables';
 
 export default function MonthFilter(props) {
   const months = [
@@ -14,15 +15,15 @@ export default function MonthFilter(props) {
     'June',
     'July',
     'August',
-    'Septerber',
+    'September',
     'October',
     'November',
     'December',
   ];
 
   const upcomingMonths = [
-    ...months.slice(new Date().getMonth() + 1, months.length),
-    ...months.slice(0, new Date().getMonth() + 1),
+    ...months.slice(props.firstMonth, months.length),
+    ...months.slice(0, props.firstMonth),
   ];
 
   const selectedMonth = months[props.month];
@@ -40,8 +41,10 @@ export default function MonthFilter(props) {
       {upcomingMonths.map(month => (
         <TouchableOpacity
           style={[
-            selectedMonth === month ? gs.btnPrimary : gs.btnOutlinePrimary,
-            {paddingVertical: 8, width: 84, borderRadius: 8, marginEnd: 6},
+            selectedMonth === month
+              ? {...gs.btnPrimary, borderWidth: 1, borderColor: v.color.primary}
+              : gs.btnOutlinePrimary,
+            {paddingVertical: 8, width: 88, borderRadius: 8, marginEnd: 6},
           ]}
           key={month}
           onPress={() => handleSetMonth(month)}>

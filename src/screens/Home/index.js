@@ -32,6 +32,9 @@ function Home(props) {
 
   const upcomingMovies = useSelector(state => state.movie.data);
 
+  const thisMonth = new Date().getMonth();
+  const nextMonth = new Date().getMonth() + 1;
+
   useEffect(() => {
     setMonth(new Date().getMonth() + 1);
     getNowShowingMovies();
@@ -44,7 +47,6 @@ function Home(props) {
 
   const getNowShowingMovies = async () => {
     try {
-      const thisMonth = new Date().getMonth();
       const result = await axios.get(
         `movie?page=${page}&limit=${limit}&searchName=${search}&sort=${sort}&searchRelease=${thisMonth}`,
       );
@@ -64,8 +66,12 @@ function Home(props) {
     }
   };
 
-  const handleViewNowShowing = () => {
-    props.navigation.navigate('MoviesNavigator', {screen: 'ListMovie'});
+  const handleViewNowShowing = defaultMonth => {
+    console.log('default month', defaultMonth);
+    props.navigation.navigate('MoviesNavigator', {
+      screen: 'ListMovie',
+      params: defaultMonth,
+    });
   };
 
   const handleRefresh = () => {
@@ -110,7 +116,7 @@ function Home(props) {
             <Text style={[gs.h2, {color: v.color.primary, marginBottom: 0}]}>
               Now Showing
             </Text>
-            <TouchableOpacity onPress={handleViewNowShowing}>
+            <TouchableOpacity onPress={() => handleViewNowShowing(thisMonth)}>
               <Text style={gs.link}>view all</Text>
             </TouchableOpacity>
           </View>
@@ -131,9 +137,15 @@ function Home(props) {
               marginBottom: 28,
             }}>
             <Text style={[gs.h2, {marginBottom: 0}]}>Upcoming Movie</Text>
-            <Text style={gs.link}>view all</Text>
+            <TouchableOpacity onPress={() => handleViewNowShowing(nextMonth)}>
+              <Text style={gs.link}>view all</Text>
+            </TouchableOpacity>
           </View>
-          <MonthFilter month={month} setMonth={setMonth} />
+          <MonthFilter
+            month={month}
+            setMonth={setMonth}
+            firstMonth={new Date().getMonth() + 1}
+          />
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             {upcomingMovies.map(movie => (
               <View key={movie.id}>

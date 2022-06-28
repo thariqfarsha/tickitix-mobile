@@ -16,6 +16,7 @@ import MonthFilter from '../../components/MonthFilter';
 import MovieCard from '../../components/MovieCard';
 import Footer from '../../components/Footer';
 import axios from '../../utils/axios';
+import SearchBar from '../../components/SearchBar';
 
 export default function ListMovie(props) {
   const sortOptions = ['A-Z', 'Z-A'];
@@ -32,22 +33,35 @@ export default function ListMovie(props) {
   const [last, setLast] = useState(false);
 
   useEffect(() => {
+    // sortMonth(props.route.params);
     getMovies();
+
+    return () => {
+      setMovies([]);
+    };
   }, []);
 
   useEffect(() => {
     getMovies();
-  }, [page, month]);
+  }, [page]);
+
+  useEffect(() => {
+    setPage(1);
+    getMovies();
+
+    return () => {
+      setMovies([]);
+    };
+  }, [month, sort, search]);
 
   const sortMonth = data => {
     setMonth(data);
+    setSearch('');
     setPage(1);
-    console.log(data);
   };
 
   const getMovies = async () => {
     try {
-      console.log('getmovie');
       setRefresh(false);
       setLoading(false);
       setLoadMore(false);
@@ -94,6 +108,13 @@ export default function ListMovie(props) {
     }
   };
 
+  const handleSearch = dataSearch => {
+    console.log('dataSearch', dataSearch);
+    setSearch(dataSearch);
+    setPage(1);
+    setMonth('');
+  };
+
   const ListHeader = () => {
     return (
       <>
@@ -120,23 +141,18 @@ export default function ListMovie(props) {
             renderDropdownIcon={() => <Icon name="chevron-down" size={16} />}
             defaultButtonText="Sort"
           />
-          <TextInput
-            style={{
-              ...gs.textInput,
-              backgroundColor: v.color.white,
-              borderRadius: 16,
-              paddingVertical: 8,
-              flex: 3,
-            }}
-            placeholder="Search movie..."
-          />
+          <SearchBar handleSearch={handleSearch} search={search} />
         </View>
 
-        <MonthFilter month={month} setMonth={sortMonth} />
+        <MonthFilter
+          month={month}
+          setMonth={sortMonth}
+          firstMonth={new Date().getMonth()}
+        />
       </>
     );
   };
-  console.log('month: ', month);
+
   return (
     <View style={{...gs.container, flex: 1}}>
       <FlatList
