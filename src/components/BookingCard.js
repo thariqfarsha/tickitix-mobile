@@ -12,22 +12,31 @@ export default function BookingCard(props) {
 
   const [premiere, setPremiere] = useState('');
 
-  // useEffect(() => {
-  //   getPremiere();
-  // }, []);
+  useEffect(() => {
+    getPremiere();
 
-  // const getPremiere = async () => {
-  //   try {
-  //     const result = await axios.get(`schedule/${scheduleId}`);
-  //     setPremiere(result.data.data.premiere);
-  //   } catch (error) {
-  //     console.log(error.response.data);
-  //   }
-  // };
+    return () => {
+      setPremiere('');
+    };
+  }, []);
 
-  const ebv = require('../assets/img/logo/cinema/ebv.id.png');
-  const hiflix = require('../assets/img/logo/cinema/hiflix.png');
-  const cineOne21 = require('../assets/img/logo/cinema/cineOne21.png');
+  const getPremiere = async () => {
+    try {
+      const result = await axios.get(`schedule/${scheduleId}`);
+      setPremiere(result.data.data[0].premiere);
+    } catch (error) {
+      console.log(error.response.data);
+    }
+  };
+
+  const cinemaLogo =
+    premiere === 'ebv.id'
+      ? require('../assets/img/logo/cinema/ebv.id.png')
+      : premiere === 'hiflix'
+      ? require('../assets/img/logo/cinema/hiflix.png')
+      : premiere === 'cineOne21'
+      ? require('../assets/img/logo/cinema/cineOne21.png')
+      : '';
 
   return (
     <View
@@ -39,15 +48,7 @@ export default function BookingCard(props) {
         elevation: 8,
       }}>
       <Image
-        source={
-          premiere === 'ebv.id'
-            ? ebv
-            : premiere === 'hiflix'
-            ? hiflix
-            : premiere === 'cineOne21'
-            ? cineOne21
-            : ''
-        }
+        source={cinemaLogo}
         style={{
           width: 100,
           height: 30,
