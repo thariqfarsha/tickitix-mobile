@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {useEffect, useState} from 'react';
-import {ScrollView, Text, View} from 'react-native';
+import {BackHandler, ScrollView, Text, View} from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 import gs from '../../styles/globalStyles';
 import v from '../../styles/styleVariables';
@@ -14,6 +14,19 @@ export default function Ticket(props) {
 
   useEffect(() => {
     getBooking();
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      () => {
+        props.navigation.navigate('ProfileNavigator', {
+          screen: 'Profile',
+        });
+      },
+    );
+
+    return () => {
+      backHandler.remove();
+    };
   }, []);
 
   const getBooking = async () => {
@@ -25,6 +38,8 @@ export default function Ticket(props) {
       console.log(error);
     }
   };
+
+  console.log(props);
 
   return (
     <ScrollView
