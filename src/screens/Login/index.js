@@ -16,6 +16,7 @@ import {getUserById} from '../../stores/actions/user';
 import gs from '../../styles/globalStyles';
 import v from '../../styles/styleVariables';
 import axios from '../../utils/axios';
+import validator from 'validator';
 
 function Login(props) {
   const dispatch = useDispatch();
@@ -35,7 +36,7 @@ function Login(props) {
   }, []);
 
   const handleChangeForm = (text, name) => {
-    setForm({...form, [name]: text});
+    setForm({...form, [name]: validator.trim(text)});
   };
 
   const handleLogin = async () => {
@@ -63,7 +64,6 @@ function Login(props) {
   };
 
   return (
-    // <View style={{backgroundColor: 'blue'}}>
     <View style={{...gs.container, overflow: 'visible', flex: 1}}>
       <Image
         source={require('../../assets/img/logo/logo-color.png')}
@@ -115,9 +115,16 @@ function Login(props) {
         </View>
       </View>
       <TouchableOpacity
-        style={gs.btnPrimary}
+        style={
+          validator.isEmpty(form.email) || validator.isEmpty(form.password)
+            ? gs.btnPrimaryDisabled
+            : gs.btnPrimary
+        }
         activeOpacity={0.9}
-        onPress={handleLogin}>
+        onPress={handleLogin}
+        disabled={
+          validator.isEmpty(form.email) || validator.isEmpty(form.password)
+        }>
         {isLoading ? (
           <ActivityIndicator color={v.color.white} size="small" />
         ) : (
