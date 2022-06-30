@@ -21,6 +21,7 @@ import Footer from '../../components/Footer';
 import axios from '../../utils/axios';
 import {useDispatch} from 'react-redux';
 import {createDataBooking} from '../../stores/actions/booking';
+import moment from 'moment/min/moment-with-locales';
 
 export default function MovieDetail(props) {
   const dispatch = useDispatch();
@@ -40,7 +41,7 @@ export default function MovieDetail(props) {
   const [showtime, setShowtime] = useState('');
   const [dataBooking, setDataBooking] = useState({
     scheduleId: null,
-    dateBooking: '',
+    dateBooking: moment(date).format('YYYY-MM-DD'),
     timeBooking: '',
     paymentMethod: '',
     totalPayment: null,
@@ -75,9 +76,16 @@ export default function MovieDetail(props) {
 
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate;
+    console.log(currentDate);
     setShow(false);
     setDate(currentDate);
+    setDataBooking({
+      ...dataBooking,
+      dateBooking: moment(currentDate).format('YYYY-MM-DD'),
+    });
   };
+
+  console.log(dataBooking);
 
   const showMode = currentMode => {
     setShow(true);
@@ -121,6 +129,12 @@ export default function MovieDetail(props) {
     props.navigation.navigate('Order');
   };
 
+  const moviePoster = {
+    uri: movie.imagePath
+      ? movie.imagePath
+      : 'https://via.assets.so/img.jpg?w=160&h=240&tc=gray&bg=#cecece&t=...',
+  };
+
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
@@ -138,11 +152,7 @@ export default function MovieDetail(props) {
             marginBottom: 16,
           }}>
           <Image
-            source={
-              movie
-                ? {uri: movie.imagePath}
-                : require('../../assets/img/blankPoster.png')
-            }
+            source={moviePoster}
             style={{borderRadius: 12, height: 240, width: 160}}
           />
         </View>
@@ -203,7 +213,7 @@ export default function MovieDetail(props) {
             <Icon name="calendar" size={16} />
 
             <Text style={gs.btnOutlinePrimaryText}>
-              {date.toLocaleString('id-ID', {dateStyle: 'short'})}
+              {moment(date).locale('id').format('LL')}
             </Text>
             <Icon name="chevron-down" size={16} />
           </TouchableOpacity>
@@ -214,6 +224,7 @@ export default function MovieDetail(props) {
               mode={mode}
               is24Hour={true}
               onChange={onChange}
+              minimumDate={new Date()}
             />
           )}
           <SelectDropdown

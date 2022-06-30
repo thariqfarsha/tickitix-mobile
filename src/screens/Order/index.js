@@ -17,6 +17,10 @@ import Icon from 'react-native-vector-icons/Feather';
 import {useDispatch, useSelector} from 'react-redux';
 import {updateDataBooking} from '../../stores/actions/booking';
 import axios from '../../utils/axios';
+import moment from 'moment/min/moment-with-locales';
+import numbro from 'numbro';
+import '../../utils/numbroLanguage';
+numbro.setLanguage('id-ID');
 
 export default function Order(props) {
   const dispatch = useDispatch();
@@ -44,7 +48,7 @@ export default function Order(props) {
       console.log(result.data);
       setReservedSeat(result.data.data);
     } catch (error) {
-      console.log(error);
+      console.log(error.response.data);
     }
   };
 
@@ -242,7 +246,9 @@ export default function Order(props) {
               }}>
               <Text style={{...gs.h5, fontWeight: '300'}}>Show date</Text>
               <Text style={{...gs.h5, fontWeight: '600'}}>
-                {dataBooking.dateBooking}
+                {moment(dataBooking.dateBooking)
+                  .locale('id')
+                  .format('dddd, LL')}
               </Text>
             </View>
             <View
@@ -266,7 +272,11 @@ export default function Order(props) {
                 One ticket price
               </Text>
               <Text style={{...gs.h5, fontWeight: '600'}}>
-                {dataBooking.price}
+                {numbro(dataBooking.price).formatCurrency({
+                  average: false,
+                  spaceSeparated: true,
+                  thousandSeparated: true,
+                })}
               </Text>
             </View>
             <View
@@ -290,7 +300,11 @@ export default function Order(props) {
             }}>
             <Text style={{...gs.h3, fontWeight: '400'}}>Total Payment</Text>
             <Text style={{...gs.h3, fontWeight: '600', color: v.color.primary}}>
-              {totalPayment}
+              {numbro(totalPayment).formatCurrency({
+                average: false,
+                spaceSeparated: true,
+                thousandSeparated: true,
+              })}
             </Text>
           </View>
         </View>

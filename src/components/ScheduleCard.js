@@ -4,6 +4,9 @@ import {Image, Text, TouchableOpacity, View} from 'react-native';
 import gs from '../styles/globalStyles';
 import v from '../styles/styleVariables';
 import HLine from './HLine';
+import numbro from 'numbro';
+import '../utils/numbroLanguage';
+numbro.setLanguage('id-ID');
 
 export default function ScheduleCard(props) {
   const {
@@ -28,7 +31,6 @@ export default function ScheduleCard(props) {
     props.setDataBooking({
       ...props.dataBooking,
       scheduleId: id,
-      dateBooking: '2022-01-01',
       timeBooking: time,
       price,
       premiere,
@@ -99,7 +101,14 @@ export default function ScheduleCard(props) {
           paddingVertical: 12,
         }}>
         <Text style={{...gs.p, fontSize: 18}}>Price</Text>
-        <Text style={gs.h5}>{price}/seat</Text>
+        <Text style={gs.h5}>
+          {numbro(price).formatCurrency({
+            average: false,
+            spaceSeparated: true,
+            thousandSeparated: true,
+          })}
+          /seat
+        </Text>
       </View>
       <TouchableOpacity
         style={{

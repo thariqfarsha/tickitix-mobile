@@ -14,6 +14,9 @@ import {createBooking} from '../../stores/actions/booking';
 import gs from '../../styles/globalStyles';
 import v from '../../styles/styleVariables';
 import axios from '../../utils/axios';
+import numbro from 'numbro';
+import '../../utils/numbroLanguage';
+numbro.setLanguage('id-ID');
 
 export default function Payment(props) {
   const dispatch = useDispatch();
@@ -72,7 +75,11 @@ export default function Payment(props) {
             Total Payment
           </Text>
           <Text style={{...gs.h2, marginBottom: 0}}>
-            {dataBooking.totalPayment}
+            {numbro(dataBooking.totalPayment).formatCurrency({
+              average: false,
+              spaceSeparated: true,
+              thousandSeparated: true,
+            })}
           </Text>
         </View>
       </View>
