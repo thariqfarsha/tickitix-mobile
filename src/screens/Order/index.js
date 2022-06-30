@@ -28,7 +28,7 @@ export default function Order(props) {
   const listSeat = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
   const [selectedSeat, setSelectedSeat] = useState([]);
   const [reservedSeat, setReservedSeat] = useState([]);
-  const [totalPayment, setTotalPayment] = useState(null);
+  const [totalPayment, setTotalPayment] = useState(0);
 
   const dataBooking = useSelector(state => state.booking.data);
 
