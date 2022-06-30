@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "659837088227",
+    "project_id": "tickitix-346809",
+    "storage_bucket": "tickitix-346809.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:659837088227:android:4c81afd0a5ed9b8599f0d6",
+        "android_client_info": {
+          "package_name": "com.tickitix"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "659837088227-e5he7klsi1cilee6fu9k1fph45ofqmp0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBBEbePeLluewf0UgkcMdtqqSRVzWZttLk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "659837088227-e5he7klsi1cilee6fu9k1fph45ofqmp0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
