@@ -19,7 +19,7 @@ export default function MovieCard(props) {
   const moviePoster = {
     uri: imagePath
       ? imagePath
-      : 'https://via.assets.so/img.jpg?w=400&h=150&tc=gray&bg=#cecece&t=...',
+      : 'https://via.assets.so/img.jpg?w=120&h=180&tc=gray&bg=#cecece&t=...',
   };
 
   return (
