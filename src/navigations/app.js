@@ -127,7 +127,7 @@ function AppNavigator() {
           // drawerItemStyle: {paddingVertical: 4, paddingHorizontal: 4},
         }}
       />
-      <Drawer.Screen
+      {/* <Drawer.Screen
         component={Notification}
         name="Notification"
         options={{
@@ -137,7 +137,7 @@ function AppNavigator() {
             <Icon name="bell" size={size} color={color} />
           ),
         }}
-      />
+      /> */}
     </Drawer.Navigator>
   );
 }
