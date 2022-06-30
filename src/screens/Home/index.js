@@ -32,8 +32,8 @@ function Home(props) {
 
   const upcomingMovies = useSelector(state => state.movie.data);
 
-  const thisMonth = new Date().getMonth();
-  const nextMonth = new Date().getMonth() + 1;
+  const thisMonth = new Date().getMonth() + 1; //.getMonth() me-return angka bulan basis 0, jadi ditambahin 1
+  const nextMonth = new Date().getMonth() + 2;
 
   useEffect(() => {
     setMonth(new Date().getMonth() + 1);
@@ -59,7 +59,7 @@ function Home(props) {
 
   const getUpcomingMovies = async () => {
     try {
-      await dispatch(getAllMovies(page, limit, search, sort, month));
+      await dispatch(getAllMovies(page, limit, search, sort, month + 1));
       setRefresh(false);
     } catch (error) {
       console.log(error);

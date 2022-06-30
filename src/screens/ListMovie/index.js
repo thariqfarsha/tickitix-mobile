@@ -67,7 +67,9 @@ export default function ListMovie(props) {
       setLoadMore(false);
       if (page <= totalPage || totalPage === 0) {
         const result = await axios.get(
-          `movie?page=${page}&limit=${limit}&searchName=${search}&sort=${sort}&searchRelease=${month}`,
+          `movie?page=${page}&limit=${limit}&searchName=${search}&sort=${sort}&searchRelease=${
+            month + 1
+          }`,
         );
         if (page === 1) {
           setMovies(result.data.data);
